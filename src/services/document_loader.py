@@ -1,33 +1,34 @@
 from pathlib import Path
 
+from src.exceptions import KnowledgeBaseException
+
 
 class DocumentLoader:
 
     KNOWLEDGE_PATH = Path("knowledge")
 
-    @staticmethod
-    def load_documents():
+    @classmethod
+    def load_documents(cls):
+
+        if not cls.KNOWLEDGE_PATH.exists():
+            raise KnowledgeBaseException(
+                "Knowledge directory not found."
+            )
 
         documents = []
 
-        print(f"Looking for knowledge in: {DocumentLoader.KNOWLEDGE_PATH.resolve()}")
+        for file in cls.KNOWLEDGE_PATH.glob("*.md"):
 
-        if not DocumentLoader.KNOWLEDGE_PATH.exists():
-            print("Knowledge folder NOT found!")
-            return documents
+            category = file.stem
 
-        files = list(DocumentLoader.KNOWLEDGE_PATH.glob("*.md"))
-        print(f"Found {len(files)} markdown files")
+            with open(file, "r", encoding="utf-8") as f:
 
-        for file in files:
-            print(f"Loading: {file.name}")
-
-            content = file.read_text(encoding="utf-8")
+                content = f.read()
 
             documents.append(
                 {
                     "title": file.stem.replace("_", " ").title(),
-                    "category": file.stem,
+                    "category": category,
                     "content": content,
                 }
             )

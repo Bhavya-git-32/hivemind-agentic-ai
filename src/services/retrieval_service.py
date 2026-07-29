@@ -1,10 +1,11 @@
-from src.services.document_loader import DocumentLoader
+from src.services.index_service import IndexService
+from src.utils.logger import logger
 
 
 class RetrievalService:
     """
     Retrieves the most relevant documents from the knowledge base
-    using simple keyword matching and scoring.
+    using keyword matching and document scoring.
     """
 
     @staticmethod
@@ -20,12 +21,18 @@ class RetrievalService:
             list: Ranked matching documents.
         """
 
-        # Load all markdown documents
-        documents = DocumentLoader.load_documents()
+        logger.info(f"Starting search for query: '{query}'")
 
-        # Convert a single category to a list
+        # Load indexed documents
+        documents = IndexService.get_documents()
+
+        logger.info(f"Knowledge base contains {len(documents)} documents.")
+
+        # Convert single category to list
         if isinstance(categories, str):
             categories = [categories]
+
+        logger.info(f"Searching categories: {categories}")
 
         query_words = query.lower().split()
 
@@ -43,7 +50,7 @@ class RetrievalService:
 
             score = 0
 
-            # Simple keyword matching
+            # Keyword matching
             for word in query_words:
                 if word in searchable_text:
                     score += 1
@@ -56,10 +63,12 @@ class RetrievalService:
                     }
                 )
 
-        # Sort by highest score first
+        # Highest score first
         results.sort(
             key=lambda x: x["score"],
             reverse=True
         )
+
+        logger.info(f"Retrieved {len(results)} matching documents.")
 
         return results

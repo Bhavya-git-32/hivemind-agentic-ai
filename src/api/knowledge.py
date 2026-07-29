@@ -1,11 +1,20 @@
-from fastapi import APIRouter
-
-from src.models.schemas import SearchRequest
-from src.services.knowledge_service import search_knowledge
-
-router = APIRouter(prefix="/knowledge", tags=["Knowledge"])
+from src.agents.coordinator_agent import CoordinatorAgent
+from src.services.response_service import ResponseService
+from src.utils.logger import logger
 
 
-@router.post("/search")
-def search(request: SearchRequest):
-    return search_knowledge(request.query)
+class KnowledgeService:
+
+    coordinator = CoordinatorAgent()
+
+    @classmethod
+    def search(cls, query: str):
+
+        logger.info(f"Searching knowledge for: {query}")
+
+        results = cls.coordinator.process_query(query)
+
+        return ResponseService.generate(
+            query,
+            results["results"]
+        )

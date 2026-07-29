@@ -2,6 +2,7 @@ from src.agents.documentation_agent import DocumentationAgent
 from src.agents.git_agent import GitAgent
 from src.agents.incident_agent import IncidentAgent
 from src.agents.employee_twin_agent import EmployeeTwinAgent
+from src.utils.logger import logger
 
 
 class CoordinatorAgent:
@@ -21,7 +22,12 @@ class CoordinatorAgent:
         self.incident_agent = IncidentAgent()
         self.employee_twin_agent = EmployeeTwinAgent()
 
+        logger.info("Coordinator Agent initialized successfully.")
+
     def process_query(self, query: str):
+
+        logger.info(f"Received query: {query}")
+
         query_lower = query.lower()
         responses = []
 
@@ -32,6 +38,7 @@ class CoordinatorAgent:
             or "architecture" in query_lower
             or "design" in query_lower
         ):
+            logger.info("Routing query to Documentation Agent")
             responses.append(
                 self.documentation_agent.search(query)
             )
@@ -44,6 +51,7 @@ class CoordinatorAgent:
             or "git" in query_lower
             or "implementation" in query_lower
         ):
+            logger.info("Routing query to Git Agent")
             responses.append(
                 self.git_agent.search(query)
             )
@@ -56,6 +64,7 @@ class CoordinatorAgent:
             or "bug" in query_lower
             or "issue" in query_lower
         ):
+            logger.info("Routing query to Incident Agent")
             responses.append(
                 self.incident_agent.search(query)
             )
@@ -68,15 +77,19 @@ class CoordinatorAgent:
             or "engineer" in query_lower
             or "developer" in query_lower
         ):
+            logger.info("Routing query to Employee Twin Agent")
             responses.append(
                 self.employee_twin_agent.search(query)
             )
 
         # Default fallback
         if not responses:
+            logger.info("No specific agent matched. Using Documentation Agent as default.")
             responses.append(
                 self.documentation_agent.search(query)
             )
+
+        logger.info(f"Query processed successfully. Agents consulted: {len(responses)}")
 
         return {
             "query": query,
