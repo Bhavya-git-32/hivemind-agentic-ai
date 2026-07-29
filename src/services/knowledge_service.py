@@ -1,10 +1,14 @@
+from src.agents.coordinator_agent import CoordinatorAgent
+from src.services.response_service import ResponseService
+
+coordinator = CoordinatorAgent()
+
+
 def search_knowledge(query: str):
-    return {
-        "query": query,
-        "source": "Knowledge Base",
-        "answer": (
-            "This is a placeholder response. "
-            "Future versions will retrieve answers using "
-            "Retrieval-Augmented Generation (RAG)."
-        ),
-    }
+
+    results = coordinator.process_query(query)
+
+    return ResponseService.generate(
+        query,
+        results["results"]
+    )
