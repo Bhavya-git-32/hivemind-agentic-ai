@@ -7,7 +7,9 @@ class EmployeeTwinAgent:
 
         matches = RetrievalService.search(
             query,
-            "employee"
+            [
+                "employee_expertise"
+            ]
         )
 
         return {

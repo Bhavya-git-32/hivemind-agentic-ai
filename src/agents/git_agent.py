@@ -7,7 +7,9 @@ class GitAgent:
 
         matches = RetrievalService.search(
             query,
-            "git"
+            [
+                "claims_pipeline"
+            ]
         )
 
         return {

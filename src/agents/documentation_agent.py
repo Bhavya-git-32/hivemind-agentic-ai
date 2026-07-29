@@ -7,7 +7,11 @@ class DocumentationAgent:
 
         matches = RetrievalService.search(
             query,
-            "documentation"
+            [
+                "api_architecture",
+                "claims_pipeline",
+                "deployment"
+            ]
         )
 
         return {
