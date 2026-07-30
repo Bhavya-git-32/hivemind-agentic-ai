@@ -1,0 +1,22 @@
+version: "3.9"
+
+
+services:
+
+  hivemind-api:
+
+    build:
+      context: .
+
+    container_name: hivemind-api
+
+
+    ports:
+      - "8000:8000"
+
+
+    environment:
+      ENVIRONMENT: production
+
+
+    restart: always

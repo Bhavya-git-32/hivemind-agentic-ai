@@ -1,5 +1,6 @@
 from src.agents.coordinator_agent import CoordinatorAgent
 from src.exceptions import HiveMindException
+from src.services.analytics_service import AnalyticsService
 from src.services.response_service import ResponseService
 from src.utils.logger import logger
 
@@ -16,6 +17,11 @@ class KnowledgeService:
             logger.info(f"Knowledge search started: {query}")
 
             results = cls.coordinator.process_query(query)
+
+            AnalyticsService.record_search(
+                query=query,
+                agents=results["selected_agents"]
+            )
 
             return ResponseService.generate(
                 query,

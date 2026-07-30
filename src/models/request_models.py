@@ -1,15 +1,10 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class QueryRequest(BaseModel):
-    """
-    User search request model.
-    """
+    query: str
 
-    query: str = Field(
-        ...,
-        min_length=3,
-        max_length=500,
-        description="Natural language search query.",
-        examples=["Explain the Claims API architecture"]
-    )
+
+class UploadRequest(BaseModel):
+    filename: str
+    content: str

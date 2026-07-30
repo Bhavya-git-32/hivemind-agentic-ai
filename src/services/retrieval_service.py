@@ -1,11 +1,10 @@
 from src.services.index_service import IndexService
-from src.utils.logger import logger
 
 
 class RetrievalService:
     """
     Retrieves the most relevant documents from the knowledge base
-    using keyword matching and document scoring.
+    using keyword-based relevance scoring.
     """
 
     @staticmethod
@@ -21,20 +20,13 @@ class RetrievalService:
             list: Ranked matching documents.
         """
 
-        logger.info(f"Starting search for query: '{query}'")
-
-        # Load indexed documents
         documents = IndexService.get_documents()
 
-        logger.info(f"Knowledge base contains {len(documents)} documents.")
-
-        # Convert single category to list
+        # Convert single category into a list
         if isinstance(categories, str):
             categories = [categories]
 
-        logger.info(f"Searching categories: {categories}")
-
-        query_words = query.lower().split()
+        query_words = set(query.lower().split())
 
         results = []
 
@@ -48,12 +40,18 @@ class RetrievalService:
                 document["title"] + " " + document["content"]
             ).lower()
 
-            score = 0
+            searchable_words = set(searchable_text.split())
 
-            # Keyword matching
-            for word in query_words:
-                if word in searchable_text:
-                    score += 1
+            # Calculate relevance score
+            score = len(query_words.intersection(searchable_words))
+
+            # Bonus if the full query exists
+            if query.lower() in searchable_text:
+                score += 3
+
+            # Bonus if query words appear in title
+            title_words = set(document["title"].lower().split())
+            score += len(query_words.intersection(title_words)) * 2
 
             if score > 0:
                 results.append(
@@ -65,10 +63,11 @@ class RetrievalService:
 
         # Highest score first
         results.sort(
-            key=lambda x: x["score"],
+            key=lambda item: (
+                item["score"],
+                len(item["document"]["content"])
+            ),
             reverse=True
         )
-
-        logger.info(f"Retrieved {len(results)} matching documents.")
 
         return results
